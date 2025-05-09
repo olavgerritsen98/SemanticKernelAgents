@@ -1,4 +1,4 @@
-﻿SemanticKernelAgents/.idea
-SemanticKernelAgents/bin/
-SemanticKernelAgents/obj/
-SemanticKernelAgents/.env
+﻿/.idea
+/bin/
+/obj/
+/.env
