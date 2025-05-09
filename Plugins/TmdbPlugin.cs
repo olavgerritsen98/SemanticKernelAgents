@@ -42,10 +42,7 @@ public class TmdbPlugin
                          $"{m.GetProperty("vote_average").GetDecimal():0.0}");
         return string.Join("\n", lines);
     }
-
-    // -------------------------------------------------------------------
-    // NEW: helper that returns the first movieId matching a title
-    // -------------------------------------------------------------------
+    
     [KernelFunction, Description("Return TMDB movieId for the given title (first search result).")]
     public async Task<string> SearchMovieIdAsync(string query)
     {
@@ -56,10 +53,7 @@ public class TmdbPlugin
         var first = doc.RootElement.GetProperty("results").EnumerateArray().FirstOrDefault();
         return first.ValueKind == JsonValueKind.Object ? first.GetProperty("id").GetInt32().ToString() : "0";
     }
-
-    // -------------------------------------------------------------------
-    // NEW: recommendations for a given movieId
-    // -------------------------------------------------------------------
+    
     [KernelFunction, Description("Get recommended movies for a TMDB movieId.")]
     public async Task<string> GetMovieRecommendationsAsync(int movieId, int take = 10)
     {

@@ -31,14 +31,11 @@
 
 ```bash
 # clone & restore packages
-git clone https://github.com/olavgerritsen98/SemanticKernelAgents
-cd movie-agent
-dotnet restore
+git clone https://github.com/olavgerritsen98/SemanticKernelAgents.git
 
 # configure secrets
 Go to kernelConfig.json
 Add the TMDB api key
 
 # run the console chat
-cd src/ConsoleChat
 dotnet run

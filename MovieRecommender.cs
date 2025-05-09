@@ -13,24 +13,17 @@ public class MovieRecommender : IMovieRecommender
         _kernel = kernel;
         _memory = memory;
     }
-
-    /// <summary>
-    /// Recommend up to five movies the user has not watched, based on TMDB's
-    /// built‑in "similar / recommended" lists for each movie already watched.
-    /// Fallback: if the user hasn't saved any titles yet, return top‑rated list.
-    /// </summary>
+    
     public async Task<IReadOnlyList<string>> RecommendAsync(int top = 20)
     {
         var watched = await _memory.AllAsync();
         if (watched.Count == 0)
         {
-            // fallback – same as before but respects 'top'
             string list = await _kernel.InvokeAsync<string>("tmdb", "GetTopRatedMoviesAsync",
                 new KernelArguments { ["take"] = top });
             return list.Split('\n', StringSplitOptions.RemoveEmptyEntries).Where(l => !string.IsNullOrWhiteSpace(l)).Take(5).ToList();
         }
 
-        // 1. resolve each watched title → movieId via TMDB search
         var ids = new List<int>();
         foreach (var title in watched)
         {
@@ -44,7 +37,6 @@ public class MovieRecommender : IMovieRecommender
             return new List<string>();
         }
 
-        // 2. collect recommendations for each id
         var suggestions = new List<string>();
         foreach (var id in ids)
         {
@@ -53,7 +45,6 @@ public class MovieRecommender : IMovieRecommender
             suggestions.AddRange(recs.Split('\n', StringSplitOptions.RemoveEmptyEntries).Where(s => !string.IsNullOrWhiteSpace(s)));
         }
 
-        // 3. de‑dup, filter already watched, rank by vote_average parsed from string
         var unseen = suggestions.Distinct(StringComparer.OrdinalIgnoreCase)
             .Where(s => !_memory.Contains(TitleOnly(s)))
             .Select(s => (Line: s, Score: ParseScore(s)))
